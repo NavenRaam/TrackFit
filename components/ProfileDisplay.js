@@ -129,7 +129,7 @@ export default function ProfileDisplay({ session, profile, onEdit }) {
               </>
             ) : (
               <div className="text-center text-white/60 col-span-full">
-                Plan details are shown only for the "Gain Muscle" goal.
+                Plan details are shown only for the &quot;Gain Muscle&quot; goal.
               </div>
             )}
           </motion.div>

@@ -21,7 +21,7 @@ export default function Dashboard() {
       };
       checkProfile();
     }
-  }, [session, status]);
+  }, [session, status, router]);
 
   if (status === "loading" || loading)
     return <p className="text-white p-4">Loading...</p>;
