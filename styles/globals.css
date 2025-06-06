@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@tailwind utilities;
+
+.chivo-mono{
+  font-family: "Chivo Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
