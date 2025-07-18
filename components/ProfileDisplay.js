@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { motion } from "framer-motion";// Ensure global styles are imported
+import { motion } from "framer-motion";
 import {
-  FaUser, FaHeartbeat, FaDumbbell, FaClipboardList,
-  FaWeight, FaCalendarAlt, FaBicycle, FaUtensils, FaUserEdit
+  FaUser, FaHeartbeat, FaDumbbell, FaClipboardList, FaWeight,
+  FaCalendarAlt, FaBicycle, FaUtensils, FaUserEdit, FaBurn
 } from "react-icons/fa";
 
 function InfoCard({ icon: Icon, label, value }) {
@@ -20,6 +20,7 @@ function InfoCard({ icon: Icon, label, value }) {
 export default function ProfileDisplay({ session, profile, onEdit }) {
   const [activeTab, setActiveTab] = useState("basic");
 
+  /* ---------- completeness circle ---------- */
   const completeness = Math.min(
     (
       [
@@ -33,6 +34,43 @@ export default function ProfileDisplay({ session, profile, onEdit }) {
     ) * 100,
     100
   );
+
+  /* ---------- goal‑specific card set ---------- */
+  const PlanCards = () => {
+    const common = (
+      <>
+        <InfoCard icon={FaWeight}   label="Target Weight"   value={profile.targetWeight && `${profile.targetWeight} kg`} />
+        <InfoCard icon={FaCalendarAlt} label="Duration" value={profile.durationWeeks && `${profile.durationWeeks} weeks`} />
+        <InfoCard icon={FaDumbbell} label="Workout Days" value={profile.workoutDays && `${profile.workoutDays} / week`} />
+        <InfoCard icon={FaUtensils} label="Meals Per Day" value={profile.mealsPerDay} />
+        <InfoCard icon={FaUtensils} label="Diet Type" value={profile.dietType} />
+        <InfoCard icon={FaBicycle}  label="Workout Location" value={profile.workoutLocation} />
+        <InfoCard icon={FaDumbbell} label="Preferred Workouts" value={(profile.preferredWorkouts || []).join(", ") || "None"} />
+        <InfoCard icon={FaUtensils} label="Allergies" value={(profile.allergies || []).join(", ") || "None"} />
+      </>
+    );
+
+    switch (profile.fitnessGoal) {
+      case "Lose Weight":
+        return (
+          <>
+            {common}
+            {/* lose‑specific field could be calories deficit etc. */}
+          </>
+        );
+
+      case "Gain Muscle":
+        return common;
+
+      default: /* Maintain */
+        return (
+          <>
+            <InfoCard icon={FaBurn} label="Maintenance Calories" value={profile.maintenanceCalories && `${profile.maintenanceCalories} kcal`} />
+            {common}
+          </>
+        );
+    }
+  };
 
   return (
     <div className="flex flex-col justify-start text-white">
@@ -77,17 +115,13 @@ export default function ProfileDisplay({ session, profile, onEdit }) {
         <div className="flex justify-center space-x-4 mb-8">
           <button
             onClick={() => setActiveTab("basic")}
-            className={`px-4 py-2 rounded-full ${
-              activeTab === "basic" ? "bg-sky-600" : "bg-white/10"
-            }`}
+            className={`px-4 py-2 rounded-full ${activeTab === "basic" ? "bg-sky-600" : "bg-white/10"}`}
           >
             <FaUser className="inline mr-1" /> Basic Info
           </button>
           <button
             onClick={() => setActiveTab("plan")}
-            className={`px-4 py-2 rounded-full ${
-              activeTab === "plan" ? "bg-sky-600" : "bg-white/10"
-            }`}
+            className={`px-4 py-2 rounded-full ${activeTab === "plan" ? "bg-sky-600" : "bg-white/10"}`}
           >
             <FaClipboardList className="inline mr-1" /> Plan Details
           </button>
@@ -97,41 +131,23 @@ export default function ProfileDisplay({ session, profile, onEdit }) {
         {activeTab === "basic" ? (
           <motion.div
             key="basic"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
             <InfoCard icon={FaCalendarAlt} label="Age" value={profile.age} />
-            <InfoCard icon={FaUser} label="Gender" value={profile.gender} />
-            <InfoCard icon={FaHeartbeat} label="Height (cm)" value={profile.height} />
-            <InfoCard icon={FaWeight} label="Weight (kg)" value={profile.weight} />
-            <InfoCard icon={FaDumbbell} label="Fitness Goal" value={profile.fitnessGoal} />
-            <InfoCard icon={FaBicycle} label="Activity Level" value={profile.activityLevel} />
+            <InfoCard icon={FaUser}       label="Gender" value={profile.gender} />
+            <InfoCard icon={FaHeartbeat}  label="Height (cm)" value={profile.height} />
+            <InfoCard icon={FaWeight}     label="Weight (kg)" value={profile.weight} />
+            <InfoCard icon={FaDumbbell}   label="Fitness Goal" value={profile.fitnessGoal} />
+            <InfoCard icon={FaBicycle}    label="Activity Level" value={profile.activityLevel} />
           </motion.div>
         ) : (
           <motion.div
             key="plan"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
-            {profile.fitnessGoal === "Gain Muscle" ? (
-              <>
-                <InfoCard icon={FaWeight} label="Target Weight" value={profile.targetWeight + " kg"} />
-                <InfoCard icon={FaCalendarAlt} label="Duration" value={profile.durationWeeks + " weeks"} />
-                <InfoCard icon={FaDumbbell} label="Workout Days" value={profile.workoutDays + " days/week"} />
-                <InfoCard icon={FaUtensils} label="Diet Type" value={profile.dietType} />
-                <InfoCard icon={FaUtensils} label="Meals Per Day" value={profile.mealsPerDay} />
-                <InfoCard icon={FaDumbbell} label="Workout Location" value={profile.workoutLocation} />
-                <InfoCard icon={FaDumbbell} label="Maintenance Calories" value={profile.maintenanceCalories + " kcal"} />
-                <InfoCard icon={FaDumbbell} label="Preferred Workouts" value={profile.preferredWorkouts?.join(", ") || "None"} />
-                <InfoCard icon={FaUtensils} label="Allergies" value={profile.allergies?.join(", ") || "None"} />
-              </>
-            ) : (
-              <div className="text-center text-white/60 col-span-full">
-                Plan details are shown only for the &quot;Gain Muscle&quot; goal.
-              </div>
-            )}
+            <PlanCards />
           </motion.div>
         )}
 

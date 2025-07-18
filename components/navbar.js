@@ -8,6 +8,7 @@ export default function Navbar() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = router.pathname;
 
   if (status === "loading") return null;
 
@@ -33,7 +34,7 @@ export default function Navbar() {
         {/* Desktop nav */}
         <div className="hidden sm:flex items-center gap-6">
           {navLinks.map((link) => (
-            <NavButton key={link.path} {...link} router={router} />
+            <NavButton key={link.path} {...link} pathname={pathname} router={router} />
           ))}
         </div>
 
@@ -84,7 +85,7 @@ export default function Navbar() {
                     setSidebarOpen(false);
                   }}
                   className={`text-lg text-left font-semibold text-white px-2 py-2 rounded hover:bg-gray-800 ${
-                    router.pathname === link.path ? "bg-sky-700" : ""
+                    pathname === link.path ? "bg-sky-700" : ""
                   }`}
                 >
                   {link.label}
@@ -107,31 +108,45 @@ export default function Navbar() {
   );
 }
 
-function NavButton({ router, path, label, rotate }) {
-  const isActive = router.pathname === path;
+function NavButton({ router, path, label, rotate, pathname }) {
+  const isActive = pathname === path;
+
+  // Define colors for consistency
+  const activeTextColor = "white"; // sky-500
+  const inactiveTextColor = "#FFFFFF"; // white
+  const hoverTextColor = "#38BDF8"; // sky-400
+
+  // Define the specific glow effects
+  const neonGlow = "0 0 8px #0ea5e9, 0 0 12px #0ea5e9, 0 0 16px #38bdf8, 0 0 24px #38bdf8";
+  const subtleHoverGlow = "0px 0px 8px rgba(56, 189, 248, 1)"; // Ensure this is not too strong
 
   return (
     <motion.button
       onClick={() => router.push(path)}
-      className={`font-semibold tracking-wide ${
-        isActive ? "text-sky-500" : "text-white"
-      }`}
-      style={
+      className="font-semibold tracking-wide relative" // Remove padding/rounded here, it's about text now
+      initial={{
+        color: inactiveTextColor,
+        textShadow: "none",
+      }}
+      animate={
         isActive
           ? {
-              textShadow:
-                "0 0 8px #0ea5e9, 0 0 12px #0ea5e9, 0 0 16px #38bdf8, 0 0 24px #38bdf8",
+              color: activeTextColor,
+              textShadow: neonGlow, // Apply neon glow only when active
             }
-          : {}
+          : {
+              color: inactiveTextColor,
+              textShadow: "none", // No glow when inactive
+            }
       }
       whileHover={{
         scale: 1.1,
         rotate: rotate,
-        color: "#38bdf8",
-        textShadow: "0px 0px 8px rgba(56, 189, 248, 1)",
+        color: hoverTextColor,
+        textShadow: subtleHoverGlow, // Apply subtle glow on hover for any button
       }}
       whileTap={{ scale: 0.95 }}
-      transition={{ type: "spring", stiffness: 500, damping: 18 }}
+      transition={{ type: "spring", stiffness: 500, damping: 25 }} // Keep the spring transition
     >
       {label}
     </motion.button>
