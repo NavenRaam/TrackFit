@@ -1,102 +1,99 @@
-// pages/api/profile/calculate-metrics.js
-import dbConnect from '@/lib/mongodb'; // Ensure this path is correct for your DB connection
-import UserProfile from '@/models/UserProfile'; // Path to your updated UserProfile model
+// pages/api/profile/calculate-metrics.js (Conceptual structure)
+import dbConnect from '@/lib/mongodb';
+import UserProfile from '@/models/UserProfile';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST' && req.method !== 'PUT') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
-  }
-
-  const { email, age, gender, height, weight, activityLevel, fitnessGoal } = req.body;
-
-  // Basic validation for essential fields needed for calculation
-  if (!email || age === undefined || !gender || height === undefined || weight === undefined || !activityLevel || !fitnessGoal) {
-    return res.status(400).json({ message: 'Missing required profile data for calculation.' });
-  }
-
-  try {
     await dbConnect();
 
-    let bmr;
-    // Mifflin-St Jeor Equation
-    // For Men: BMR=(10×weight in kg)+(6.25×height in cm)−(5×age in years)+5
-    // For Women: BMR=(10×weight in kg)+(6.25×height in cm)−(5×age in years)−161
-    if (gender === "Male") {
-      bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
-    } else if (gender === "Female") {
-      bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
-    } else {
-      // Handle "Other" or default to a common average or male formula
-      bmr = (10 * weight) + (6.25 * height) - (5 * age); // Neutralized for simplicity, could be more nuanced
+    if (req.method !== 'POST') {
+        return res.status(405).json({ message: 'Method Not Allowed' });
     }
 
-    let tdee; // Total Daily Energy Expenditure (Maintenance Calories)
-    // Activity Factor: Multiply BMR by an activity factor
-    switch (activityLevel) {
-      case "Sedentary": tdee = bmr * 1.2; break;
-      case "Lightly active": tdee = bmr * 1.375; break;
-      case "Moderately active": tdee = bmr * 1.55; break;
-      case "Very active": tdee = bmr * 1.725; break;
-      case "Extra active": tdee = bmr * 1.9; break;
-      default: tdee = bmr * 1.55; // Fallback to moderately active
+    const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ message: 'Email required' });
     }
 
-    let targetCalories = tdee;
-    let proteinPercent, carbsPercent, fatsPercent;
+    try {
+        // Find the user profile
+        const profile = await UserProfile.findOne({ email });
+        if (!profile) {
+            return res.status(404).json({ message: 'User profile not found.' });
+        }
 
-    // Adjust target calories and macro percentages based on fitness goal
-    switch (fitnessGoal) {
-      case "Weight Loss":
-        targetCalories = tdee - 500; // 500 kcal deficit
-        proteinPercent = 0.40; carbsPercent = 0.30; fatsPercent = 0.30;
-        break;
-      case "Muscle Gain":
-        targetCalories = tdee + 300; // 300 kcal surplus (Adjust this based on desired gain rate)
-        proteinPercent = 0.35; carbsPercent = 0.45; fatsPercent = 0.20;
-        break;
-      case "Maintenance":
-      default:
-        proteinPercent = 0.25; carbsPercent = 0.50; fatsPercent = 0.25; // More balanced
-        break;
+        // --- PERFORM CALCULATIONS HERE ---
+        // Use profile.age, profile.gender, profile.weight, profile.height, profile.activityLevel, profile.fitnessGoal
+        // Example (simplified - replace with your actual formulas):
+        let bmr;
+        if (profile.gender === 'Male') {
+            bmr = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) + 5;
+        } else { // Female
+            bmr = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) - 161;
+        }
+
+        let tdee;
+        // Map activityLevel to a multiplier. Ensure these strings match your *schema* enums.
+        const activityMultipliers = {
+            "Sedentary": 1.2,
+            "Lightly Active": 1.375,
+            "Moderately Active": 1.55,
+            "Very Active": 1.725,
+            "Extra Active": 1.9
+        };
+        const multiplier = activityMultipliers[profile.activityLevel];
+        if (!multiplier) {
+            // This is a critical error if activityLevel is not valid
+            console.error(`Invalid activityLevel: ${profile.activityLevel} for email: ${email}`);
+            return res.status(400).json({ message: 'Invalid activity level in profile for calculation.' });
+        }
+        tdee = bmr * multiplier;
+
+        let targetCalories = tdee;
+        let proteinGrams = 0, carbsGrams = 0, fatsGrams = 0;
+
+        if (profile.fitnessGoal === "Weight Loss") {
+            targetCalories -= 500; // Example deficit
+            proteinGrams = (targetCalories * 0.3) / 4; // 30% protein
+            carbsGrams = (targetCalories * 0.4) / 4;  // 40% carbs
+            fatsGrams = (targetCalories * 0.3) / 9;    // 30% fats
+        } else if (profile.fitnessGoal === "Muscle Gain") {
+            targetCalories += 300; // Example surplus
+            proteinGrams = (targetCalories * 0.4) / 4;
+            carbsGrams = (targetCalories * 0.4) / 4;
+            fatsGrams = (targetCalories * 0.2) / 9;
+        } else if (profile.fitnessGoal === "Maintenance") {
+            targetCalories = profile.maintenanceCalories || tdee; // Use user-provided if exists, else calculated
+            proteinGrams = (targetCalories * 0.3) / 4;
+            carbsGrams = (targetCalories * 0.5) / 4;
+            fatsGrams = (targetCalories * 0.2) / 9;
+        } else { // Improve Endurance or other
+            proteinGrams = (targetCalories * 0.25) / 4;
+            carbsGrams = (targetCalories * 0.55) / 4;
+            fatsGrams = (targetCalories * 0.2) / 9;
+        }
+        // --- END CALCULATIONS ---
+
+        // **D1: SAVE CALCULATED VALUES BACK TO THE PROFILE**
+        profile.targetCalories = Math.round(targetCalories);
+        profile.targetMacros = {
+            protein: Math.round(proteinGrams),
+            carbs: Math.round(carbsGrams),
+            fats: Math.round(fatsGrams),
+        };
+        // Also ensure maintenanceCalories is correctly set based on goal
+        if (profile.fitnessGoal !== 'Maintenance') {
+            profile.maintenanceCalories = undefined; // Clear if not maintenance goal
+        } else if (profile.maintenanceCalories === undefined || profile.maintenanceCalories === null) {
+            profile.maintenanceCalories = Math.round(tdee); // If maintenance, but not set, set to TDEE
+        }
+
+        await profile.save(); // Save the updated profile document
+
+        return res.status(200).json({ message: 'Metrics calculated and profile updated successfully.', profile: profile.toObject() });
+
+    } catch (error) {
+        console.error("Error in calculate-metrics API:", error);
+        // Provide more specific error if needed
+        return res.status(500).json({ message: 'Failed to calculate metrics.', error: error.message });
     }
-
-    // Convert macro percentages to grams
-    // Protein: 4 kcal/g, Carbs: 4 kcal/g, Fat: 9 kcal/g
-    const targetMacros = {
-      protein: Math.round((targetCalories * proteinPercent) / 4),
-      carbs: Math.round((targetCalories * carbsPercent) / 4),
-      fats: Math.round((targetCalories * fatsPercent) / 9),
-    };
-
-    // Update the user profile with these calculated metrics
-    const updatedProfile = await UserProfile.findOneAndUpdate(
-      { email },
-      {
-        $set: {
-          maintenanceCalories: Math.round(tdee),
-          targetCalories: Math.round(targetCalories),
-          targetMacros,
-          // If this endpoint is also used for general profile updates,
-          // ensure other fields from req.body are also passed to $set
-          // For simplicity, this example only updates the calculated metrics.
-          // In a real app, you'd likely merge req.body with these calculated values
-          // before passing to $set.
-        },
-      },
-      { new: true, upsert: true } // upsert: true creates if not exists, new: true returns updated doc
-    );
-
-    if (!updatedProfile) {
-      return res.status(404).json({ message: 'User profile not found.' });
-    }
-
-    res.status(200).json({
-      message: 'Profile metrics updated successfully.',
-      profile: updatedProfile,
-    });
-
-  } catch (err) {
-    console.error('Error calculating or updating profile metrics:', err);
-    res.status(500).json({ message: 'Server error during metric calculation.' });
-  }
 }
