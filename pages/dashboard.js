@@ -6,26 +6,34 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { Scale, CheckCircle2, TrendingUp, CalendarDays } from 'lucide-react';
 dayjs.extend(relativeTime);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-const StatCard = ({ title, value, suffix = "" }) => (
-  <div className="bg-white/10 p-4 rounded-xl border border-white/20 w-full text-center flex flex-col items-center justify-center">
-    <p className="text-xs text-gray-300 mb-1">{title}</p>
-    <p className="text-3xl font-semibold text-sky-400">
+const StatCard = ({ title, value, suffix = "", icon: Icon, themeColor }) => (
+  <motion.div
+    whileHover={{ scale: 1.03, boxShadow: "0 10px 40px 0 rgba(6, 182, 212, 0.5)" }}
+    className={`bg-white/10 p-4 rounded-2xl border border-white/20 w-full text-center flex flex-col items-center justify-center backdrop-blur-sm transition-all duration-200 shadow-md ${themeColor === "red" ? 'text-red-400' : 'text-emerald-400'}`}
+  >
+    {Icon && (
+      <div className="mb-2">
+        <Icon className={`w-8 h-8 ${themeColor === "red" ? 'text-red-400' : 'text-cyan-400'}`} />
+      </div>
+    )}
+    <p className="text-sm font-semibold text-gray-200 mb-1">{title}</p>
+    <p className="text-3xl font-semibold">
       {value}{suffix}
     </p>
-  </div>
+  </motion.div>
 );
 
-const NavButton = ({ href = "#", label, ...rest }) => (
-  <motion.a {...rest}
+const NavButton = ({ label, ...rest }) => (
+  <motion.button {...rest}
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
-    href={href}
-    className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-base font-medium text-center shadow-lg hover:shadow-xl transition-all duration-200 ease-in-out"
-  >{label}</motion.a>
+    className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-700 hover:to-emerald-700 text-base font-medium text-center shadow-lg hover:shadow-xl transition-all duration-200 ease-in-out"
+  >{label}</motion.button>
 );
 
 function EditSheet({ open, init, onSave, onClose }) {
@@ -53,12 +61,12 @@ function EditSheet({ open, init, onSave, onClose }) {
           initial={{ x: 300 }} animate={{ x: 0 }} exit={{ x: 300 }}
           className="w-full max-w-md bg-gray-900 p-8 rounded-l-2xl shadow-2xl border-l border-white/20"
         >
-          <h3 className="text-2xl font-bold text-purple-300 mb-6">
+          <h3 className="text-2xl font-bold text-cyan-300 mb-6">
             {dayjs().format("MMM D, YYYY")} &mdash; Log Today
           </h3>
           <label className="flex items-center gap-3 mt-4 text-lg font-medium text-gray-200">
             <input type="checkbox" checked={form.completed} onChange={set('completed')}
-              className="form-checkbox h-5 w-5 text-purple-600 rounded border-gray-600 bg-gray-700 focus:ring-purple-500" />
+              className="form-checkbox h-5 w-5 text-cyan-600 rounded border-gray-600 bg-gray-700 focus:ring-cyan-500" />
             Workout completed
           </label>
           {['weight', 'calories', 'metric1', 'metric2'].map((k, i) => (
@@ -67,7 +75,7 @@ function EditSheet({ open, init, onSave, onClose }) {
               placeholder={['Weight (kg)', 'Calories', 'Protein (g)', 'Steps'][i]}
               value={form[k] ?? ''}
               onChange={set(k)}
-              className="w-full mt-4 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-base text-white placeholder-gray-500 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 outline-none transition-all duration-200"
+              className="w-full mt-4 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-base text-white placeholder-gray-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none transition-all duration-200"
             />
           ))}
           <div className="mt-8 flex justify-end gap-4">
@@ -79,7 +87,7 @@ function EditSheet({ open, init, onSave, onClose }) {
               metric1: parseInt(form.metric1),
               metric2: parseInt(form.metric2),
             })}
-              className="text-base px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 transition-colors duration-200 text-white font-medium shadow-md">Save</button>
+              className="text-base px-6 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors duration-200 text-white font-medium shadow-md">Save</button>
           </div>
         </motion.div>
       </motion.div>
@@ -93,7 +101,7 @@ const HoverCard = ({ show, x, y, info }) => show && (
     style={{ top: y + 10, left: x + 10 }}
   >
     <div className="bg-gray-900/95 text-gray-100 text-sm p-4 rounded-lg border border-white/30 shadow-2xl backdrop-blur-sm">
-      <p className="font-semibold mb-2 text-lg text-purple-300">{dayjs(info.date).format("MMM D, YYYY")}</p>
+      <p className="font-semibold mb-2 text-lg text-emerald-300">{dayjs(info.date).format("MMM D, YYYY")}</p>
       <p className="flex items-center gap-2 mb-1"><span className="font-medium text-gray-400">Workout:</span> {info.completed ? "✅ Completed" : "❌ Not Completed"}</p>
       <p className="flex items-center gap-2 mb-1"><span className="font-medium text-gray-400">Weight:</span> {info.weight ? `${info.weight} kg` : "--"}</p>
       <p className="flex items-center gap-2 mb-1"><span className="font-medium text-gray-400">Calories:</span> {info.calories ?? "--"}</p>
@@ -107,8 +115,8 @@ const Cell = ({ dayStr, inPlan, data, onHover, onLeave, onClick }) => {
   const today = dayStr === dayjs().format("YYYY-MM-DD");
   const done = data?.completed;
   const base = inPlan
-    ? done ? "bg-emerald-600/80 hover:bg-emerald-500" : today ? "bg-yellow-500/80 animate-pulse hover:bg-yellow-400" : "bg-sky-700/70 hover:bg-sky-600"
-    : "bg-white/15 cursor-not-allowed"; // Slightly darker for out-of-plan days
+    ? done ? "bg-emerald-600/80 hover:bg-emerald-500" : today ? "bg-yellow-500/80 animate-pulse hover:bg-yellow-400" : "bg-cyan-700/70 hover:bg-cyan-600"
+    : "bg-white/15 cursor-not-allowed";
   return (
     <div onMouseEnter={e => inPlan && onHover(e, dayStr, data)}
       onMouseLeave={onLeave}
@@ -119,6 +127,38 @@ const Cell = ({ dayStr, inPlan, data, onHover, onLeave, onClick }) => {
     </div>
   );
 };
+
+const dotVariants = {
+  initial: { opacity: 0.4, scale: 0.8 },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.8,
+      repeat: Infinity,
+      repeatType: "reverse",
+      ease: "easeInOut",
+    },
+  },
+};
+
+const PulsatingDotLoader = ({ message = "Loading..." }) => (
+  <div className="min-h-screen flex flex-col items-center justify-center text-white text-xl p-6">
+    <div className="flex space-x-2 mb-4">
+      {[...Array(3)].map((_, i) => (
+        <motion.span
+          key={i}
+          className="block w-4 h-4 rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400"
+          variants={dotVariants}
+          initial="initial"
+          animate="animate"
+          transition={{ ...dotVariants.animate.transition, delay: i * 0.2 }}
+        />
+      ))}
+    </div>
+    <p>{message}</p>
+  </div>
+);
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -133,14 +173,11 @@ export default function Dashboard() {
   const [tips, setTips] = useState([]);
 
   const refreshLogs = async () => {
-  const res = await fetch(`/api/progress/days?email=${session.user.email}`);
-  const data = await res.json();
-  const arr = Object.entries(data || {}).map(([d, v]) => ({ date: d, ...v }));
+    const res = await fetch(`/api/progress/days?email=${session.user.email}`);
+    const data = await res.json();
+    const arr = Object.entries(data || {}).map(([d, v]) => ({ date: d, ...v }));
 
-    // --- ADD THIS SORTING LOGIC ---
-    arr.sort((a, b) => dayjs(b.date).diff(dayjs(a.date))); // Sort descending by date (newest first)
-    // If you wanted ascending (oldest first) you would use: dayjs(a.date).diff(dayjs(b.date))
-
+    arr.sort((a, b) => dayjs(b.date).diff(dayjs(a.date)));
     setLogs(arr);
   };
 
@@ -208,38 +245,6 @@ export default function Dashboard() {
     return t;
   }, [tips, logMap, today]);
 
-  const dotVariants = {
-  initial: { opacity: 0.4, scale: 0.8 },
-  animate: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.8,
-      repeat: Infinity,
-      repeatType: "reverse",
-      ease: "easeInOut",
-    },
-  },
-};
-
-const PulsatingDotLoader = ({ message = "Loading..." }) => (
-  <div className="min-h-screen flex flex-col items-center justify-center text-white text-xl p-6">
-    <div className="flex space-x-2 mb-4">
-      {[...Array(3)].map((_, i) => (
-        <motion.span
-          key={i}
-          className="block w-4 h-4 rounded-full bg-gradient-to-r from-sky-400 to-purple-500"
-          variants={dotVariants}
-          initial="initial"
-          animate="animate"
-          transition={{ ...dotVariants.animate.transition, delay: i * 0.2 }} // Staggered animation
-        />
-      ))}
-    </div>
-    <p>{message}</p>
-  </div>
-);
-
   if (status === "loading" || loading) return <PulsatingDotLoader message="Loading dashboard..." />;
 
   return (
@@ -252,8 +257,8 @@ const PulsatingDotLoader = ({ message = "Loading..." }) => (
       {/* Left Pane - Main Content Area */}
       <div className="flex-1 space-y-8 lg:space-y-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <h1 className="text-4xl font-extrabold text-white leading-tight">Welcome back, <span className="text-purple-400">{session.user.name || "Athlete"}</span>!</h1>
-          <p className="text-lg text-gray-300 mt-2">Your fitness goal: <span className="font-semibold text-sky-300">{profile.fitnessGoal}</span></p>
+          <h1 className="text-4xl font-extrabold text-white leading-tight">Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 drop-shadow-lg">{session.user.name || "Athlete"}</span>!</h1>
+          <p className="text-lg text-gray-300 mt-2">Your fitness goal: <span className="font-semibold text-cyan-300">{profile.fitnessGoal}</span></p>
         </motion.div>
 
         {/* Stat Cards */}
@@ -263,10 +268,10 @@ const PulsatingDotLoader = ({ message = "Loading..." }) => (
           transition={{ delay: 0.2, duration: 0.5 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-6"
         >
-          <StatCard title="Current Weight" value={logMap[today]?.weight ?? logs.find(l => l.weight)?.weight ?? "--"} suffix="kg" />
-          <StatCard title="Workouts Completed" value={`${completedDays}/${totalDays}`} />
-          <StatCard title="Overall Progress" value={`${progressPct}%`} />
-          <StatCard title="Today's Workout" value={logMap[today]?.completed ? "✅ Done" : "❌ Pending"} />
+          <StatCard title="Current Weight" value={logMap[today]?.weight ?? logs.find(l => l.weight)?.weight ?? "--"} suffix="kg" icon={Scale} themeColor="cyan" />
+          <StatCard title="Workouts Completed" value={`${completedDays}/${totalDays}`} icon={CheckCircle2} themeColor="emerald" />
+          <StatCard title="Overall Progress" value={`${progressPct}%`} icon={TrendingUp} themeColor="cyan" />
+          <StatCard title="Today's Workout" value={logMap[today]?.completed ? "✅ Done" : "❌ Pending"} icon={CalendarDays} themeColor={logMap[today]?.completed ? "emerald" : "red"} />
         </motion.div>
 
         {/* Progress Bar */}
@@ -287,23 +292,23 @@ const PulsatingDotLoader = ({ message = "Loading..." }) => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
-          className="flex flex-wrap gap-4 justify-center md:justify-start"
+          className="flex flex-wrap px-10 gap-10 justify-center md:justify-start"
         >
-          <NavButton href="/workouts" label="Explore Workouts" />
-          <NavButton href="/diet" label="Manage Diet" />
+          <NavButton onClick={() => router.push("/workouts")} label="Explore Workouts" />
+          <NavButton onClick={() => router.push("/diet")} label="Manage Diet" />
           <NavButton onClick={openTodaySheet} label="Log Today's Progress" />
         </motion.div>
 
-        {/* Recent Activity/Achievements Section (New Addition) */}
+        {/* Recent Activity/Achievements Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
           className="bg-gray-800/60 p-6 rounded-2xl border border-white/10 shadow-lg"
         >
-          <h2 className="text-2xl font-bold text-sky-300 mb-4">Recent Activity & Achievements</h2>
+          <h2 className="text-2xl font-bold text-cyan-300 mb-4">Recent Activity & Achievements</h2>
           <ul className="space-y-3">
-            {logs.slice(0, 3).map((log, index) => ( // Show last 3 logs
+            {logs.slice(0, 3).map((log, index) => (
               <li key={index} className="flex items-center justify-between text-gray-300 text-md">
                 <span>
                   {dayjs(log.date).format("MMM D")}: {log.completed ? "Workout completed" : "Workout missed"}
@@ -317,14 +322,13 @@ const PulsatingDotLoader = ({ message = "Loading..." }) => (
             {logs.length === 0 && (
               <p className="text-gray-400 italic">No activity logged yet. Start logging your progress!</p>
             )}
-            {completedDays >= totalDays * 0.5 && totalDays > 0 && ( // Example achievement
-              <li className="flex items-center gap-3 text-yellow-400 font-semibold text-md mt-4">
+            {completedDays >= totalDays * 0.5 && totalDays > 0 && (
+              <li className="flex items-center gap-3 text-emerald-400 font-semibold text-md mt-4">
                 🏆 You've completed over 50% of your plan! Keep pushing!
               </li>
             )}
           </ul>
         </motion.div>
-
       </div>
 
       {/* Right Pane - Calendar and Tips */}
@@ -342,7 +346,7 @@ const PulsatingDotLoader = ({ message = "Loading..." }) => (
               onClick={() => setMonth(month.subtract(1, 'month'))}
               className="p-2 rounded-full hover:bg-white/10 transition-colors"
             >&lt;</motion.button>
-            <p className="text-xl font-bold text-purple-300">{month.format("MMMM YYYY")}</p>
+            <p className="text-xl font-bold text-cyan-300">{month.format("MMMM YYYY")}</p>
             <motion.button
               whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
               onClick={() => setMonth(month.add(1, 'month'))}
@@ -374,7 +378,7 @@ const PulsatingDotLoader = ({ message = "Loading..." }) => (
           transition={{ delay: 0.5, duration: 0.5 }}
           className="w-full bg-gray-800/60 p-6 rounded-2xl border border-white/10 shadow-lg"
         >
-          <h2 className="font-bold text-2xl text-purple-300 mb-4">
+          <h2 className="font-bold text-2xl text-cyan-300 mb-4">
             {logMap[today]?.completed ? "Tips for Tomorrow" : "Daily Insights"}:
           </h2>
           <ul className="list-disc list-inside text-base text-gray-200 space-y-2">

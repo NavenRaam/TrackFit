@@ -33,8 +33,7 @@ export default function Navbar() {
         {/* Logo */}
         <div className="text-lg font-semibold">
           <h1 className="text-3xl font-bold tracking-wide select-none cursor-default text-white">
-            <span className="text-purple-500">Track</span>
-            <span className="text-sky-600">Fit</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 drop-shadow-lg">TrackFit</span>
           </h1>
         </div>
 

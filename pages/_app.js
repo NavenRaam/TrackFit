@@ -14,7 +14,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
 
   return (
     <SessionProvider session={session}>
-      <div className="relative min-h-screen bg-gradient-to-tr from-gray-900 via-indigo-900 to-purple-800 text-white flex flex-col items-center">
+      <div className="relative min-h-screen bg-gray-950 text-white flex flex-col items-center">
         {shouldShowNavbar && <Navbar />}
         <AnimatePresence mode="wait">
           <motion.div

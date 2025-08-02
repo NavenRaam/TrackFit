@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import { useEffect, useState, useCallback } from "react"; // Added useCallback
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -27,13 +27,13 @@ const itemVariants = {
 function DayCard({ day, lines }) {
   return (
     <motion.div
-      className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg hover:shadow-2xl hover:border-white/30 transition-all duration-300 transform hover:-translate-y-1" // Enhanced styling for hover
-      variants={itemVariants} // Use common itemVariants
+      className="bg-gray-800/60 p-6 rounded-2xl border border-white/10 shadow-lg hover:shadow-2xl hover:border-cyan-400 transition-all duration-300 transform hover:-translate-y-2 backdrop-blur-sm"
+      variants={itemVariants}
     >
-      <h3 className="text-xl font-bold text-purple-400 mb-3 border-b border-purple-400/50 pb-2">
+      <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 mb-3 border-b border-white/20 pb-2">
         {day}
       </h3>
-      <ul className="list-disc list-inside text-base text-white/90 space-y-2"> {/* Increased text size and spacing */}
+      <ul className="list-disc list-inside text-base text-gray-200 space-y-2">
         {lines.map((l, i) => (
           <li key={i}>{l}</li>
         ))}
@@ -101,26 +101,26 @@ export default function WorkoutPage() {
 
   return (
     <motion.div
-      className="max-w-7xl mx-auto px-6 text-white space-y-12" // Increased max-width, padding, and spacing
+      className="max-w-7xl mx-auto px-6 text-white space-y-12"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       <motion.h1
-        className="text-4xl sm:text-5xl font-extrabold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-purple-500 tracking-tight" // Enhanced title styling
+        className="text-4xl sm:text-5xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 tracking-tight drop-shadow-lg"
         variants={itemVariants}
       >
-        Your Personalized Workout Plan
+        Personalized Workout Plan
       </motion.h1>
 
       {/* regenerate only if plan ended */}
       {isExpired() && (
-        <motion.div variants={itemVariants} className="text-center"> {/* Centered the button's container */}
+        <motion.div variants={itemVariants} className="text-center">
           <motion.button
-            whileHover={{ scale: 1.07, boxShadow: "0 0 20px rgba(78, 178, 255, 0.6)" }} // Enhanced hover for button
+            whileHover={{ scale: 1.07, boxShadow: "0 0 20px rgba(6, 182, 212, 0.6)" }}
             whileTap={{ scale: 0.95 }}
             onClick={() => fetchPlan(true)}
-            className="inline-flex items-center justify-center bg-gradient-to-r from-sky-500 to-purple-600 px-8 py-3 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50" // More prominent button
+            className="inline-flex items-center justify-center bg-gradient-to-r from-cyan-600 to-emerald-600 px-8 py-3 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-500 focus:ring-opacity-50"
           >
             {loading ? (
               <span className="flex items-center">
@@ -140,7 +140,7 @@ export default function WorkoutPage() {
       {/* countdown */}
       {!isExpired() && (
         <motion.p
-          className="text-center text-base text-white/80" // Slightly larger text, better contrast
+          className="text-center text-lg text-white/80"
           variants={itemVariants}
         >
           Plan ends {dayjs(meta.startDate).add(meta.durationWeeks, "week").fromNow()} — stay consistent and crush your goals!
@@ -150,11 +150,11 @@ export default function WorkoutPage() {
       {/* notes */}
       {planData.notes.length > 0 && (
         <motion.div
-          className="bg-white/10 p-8 rounded-xl border border-white/20 shadow-2xl" // Increased padding and shadow
+          className="bg-gray-800/60 p-8 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-sm"
           variants={itemVariants}
         >
-          <h2 className="text-3xl font-bold text-sky-400 mb-5 border-b border-sky-400/50 pb-3">Important Notes</h2> {/* Larger heading, subtle border */}
-          <ul className="list-disc ml-8 text-base space-y-2 text-white/90"> {/* Increased text size and spacing */}
+          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 mb-5 border-b border-white/20 pb-3">Important Notes</h2>
+          <ul className="list-disc ml-8 text-base space-y-2 text-gray-200">
             {planData.notes.map((n, i) => (
               <motion.li key={i} variants={itemVariants}>{n}</motion.li>))}
           </ul>
@@ -164,8 +164,8 @@ export default function WorkoutPage() {
       {/* day cards */}
       {Object.keys(planData.days).length > 0 && (
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" // Increased gap
-          variants={containerVariants} // Use containerVariants for staggering children
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
           initial="hidden"
           animate="visible"
         >

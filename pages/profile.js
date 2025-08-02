@@ -405,11 +405,11 @@ export default function Profile() {
     
     // UI improvement to be a better version of the user's reference image
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br text-white flex flex-col antialiased">
+        <div className="min-h-screen w-full  text-white flex flex-col antialiased">
             
             {/* Main Content Area */}
             <div className="flex-grow flex items-center justify-center p-4">
-                <div className="w-full max-w-6xl p-8 bg-gray-900/40 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/10">
+                <div className="w-full max-w-6xl p-8  rounded-3xl shadow-2xl ">
                     <AnimatePresence>
                         {notification && (
                             <Notification
@@ -530,7 +530,7 @@ export default function Profile() {
                             <div className="flex justify-center mt-8">
                                 <button
                                     onClick={() => setEditMode(true)}
-                                    className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 uppercase tracking-wide"
+                                    className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-700 hover:to-emerald-700 text-white font-bold rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 uppercase tracking-wide"
                                 >
                                     <svg className="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
