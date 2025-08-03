@@ -306,7 +306,8 @@ export default function Navbar() {
     { path: "/dashboard", label: "Home", rotate: -3.5, icon: Home },
     { path: "/workouts", label: "Workouts", rotate: 3.5, icon: Dumbbell },
     { path: "/diet", label: "Diet", rotate: -3.5, icon: Apple },
-    { path: "/tutorials", label: "Tutorials", rotate: 3.5, icon: BookOpen }
+    { path: "/tutorials", label: "Tutorials", rotate: 3.5, icon: BookOpen },
+    { path: "/profile", label: "Profile", rotate: -3.5, icon: User }
   ];
 
   const handleSignOut = () => {
