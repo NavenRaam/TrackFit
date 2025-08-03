@@ -408,8 +408,8 @@ export default function Profile() {
         <div className="min-h-screen w-full  text-white flex flex-col antialiased">
             
             {/* Main Content Area */}
-            <div className="flex-grow flex items-center justify-center p-4">
-                <div className="w-full max-w-6xl p-8  rounded-3xl shadow-2xl ">
+            <div className="flex-grow flex items-center justify-center">
+                <div className="w-full max-w-6xl ">
                     <AnimatePresence>
                         {notification && (
                             <Notification

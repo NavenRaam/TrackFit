@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react'; // Keep useSession for authenticat
 import { useRouter } from 'next/router'; // Keep useRouter for redirection
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PulseLoader } from 'react-spinners'; // Import PulseLoader for loading state
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import utc from 'dayjs/plugin/utc';
@@ -218,7 +219,13 @@ const PulsatingDotLoader = ({ message = "Loading..." }) => (
   </div>
 );
 
-  if (status === "loading" || loading) return <PulsatingDotLoader message="" />;
+  if (status === 'loading' || loading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <PulseLoader color="#06B6D4" size={15} />
+            </div>
+        );
+  }
 
   if (!session) {
     router.replace("/"); // Redirect to login if not authenticated

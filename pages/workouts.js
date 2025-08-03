@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { PulseLoader } from "react-spinners";
 
 dayjs.extend(relativeTime);
 
@@ -96,7 +97,13 @@ export default function WorkoutPage() {
     if (status === "authenticated") fetchPlan();
   }, [status, fetchPlan]); // Add fetchPlan to dependencies because it's in useEffect
 
-  if (status === "loading") return <p className="text-center text-white p-6 text-xl">Loading workout plan...</p>;
+  if (status === 'loading' || loading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <PulseLoader color="#06B6D4" size={15} />
+            </div>
+        );
+  }
   if (!session) return <p className="text-center text-white p-6 text-xl">Please log in to view your workout plan.</p>;
 
   return (

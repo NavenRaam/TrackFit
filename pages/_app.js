@@ -13,7 +13,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
   const shouldShowNavbar = !hideNavbarRoutes.includes(router.pathname);
 
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={session} secret={process.env.NEXTAUTH_SECRET}>
       <div className="relative min-h-screen bg-gray-950 text-white flex flex-col items-center">
         {shouldShowNavbar && <Navbar />}
         <AnimatePresence mode="wait">

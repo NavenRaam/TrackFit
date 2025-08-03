@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { PulseLoader } from 'react-spinners';
 import { Scale, CheckCircle2, TrendingUp, CalendarDays } from 'lucide-react';
 dayjs.extend(relativeTime);
 dayjs.extend(isSameOrBefore);
@@ -142,23 +143,7 @@ const dotVariants = {
   },
 };
 
-const PulsatingDotLoader = ({ message = "Loading..." }) => (
-  <div className="min-h-screen flex flex-col items-center justify-center text-white text-xl p-6">
-    <div className="flex space-x-2 mb-4">
-      {[...Array(3)].map((_, i) => (
-        <motion.span
-          key={i}
-          className="block w-4 h-4 rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400"
-          variants={dotVariants}
-          initial="initial"
-          animate="animate"
-          transition={{ ...dotVariants.animate.transition, delay: i * 0.2 }}
-        />
-      ))}
-    </div>
-    <p>{message}</p>
-  </div>
-);
+
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -245,10 +230,15 @@ export default function Dashboard() {
     return t;
   }, [tips, logMap, today]);
 
-  if (status === "loading" || loading) return <PulsatingDotLoader message="Loading dashboard..." />;
-
+  if (status === 'loading' || loading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <PulseLoader color="#06B6D4" size={15} />
+            </div>
+        );
+  }
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row gap-8 p-6 lg:p-10 text-white font-sans">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-8 p-0 lg:px-15 text-white font-sans">
       <EditSheet open={sheetOpen} init={sheetInit} onSave={saveSheet} onClose={() => setSheetOpen(false)} />
       <AnimatePresence>
         {hover.show && <HoverCard {...hover} />}
