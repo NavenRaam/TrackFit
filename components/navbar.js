@@ -181,7 +181,7 @@ function SidebarButton({ onClick, icon, label, color }) {
   );
 }
 
-// NEW: Confirmation Modal with Password Input
+// Confirmation Modal with Password Input
 function ConfirmationModalWithPassword({
   isOpen,
   onClose,
@@ -300,14 +300,13 @@ export default function Navbar() {
 
   if (status === "loading") return null;
 
-  // The main navigation links, excluding a dedicated profile link for mobile
-  // and having a cleaner desktop nav.
+  // The main navigation links, including the Profile link.
   const navLinks = [
     { path: "/dashboard", label: "Home", rotate: -3.5, icon: Home },
     { path: "/workouts", label: "Workouts", rotate: 3.5, icon: Dumbbell },
     { path: "/diet", label: "Diet", rotate: -3.5, icon: Apple },
     { path: "/tutorials", label: "Tutorials", rotate: 3.5, icon: BookOpen },
-    { path: "/profile", label: "Profile", rotate: -3.5, icon: User }
+    { path: "/profile", label: "Profile", rotate: -3.5, icon: User },
   ];
 
   const handleSignOut = () => {
@@ -322,7 +321,7 @@ export default function Navbar() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', 
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -383,7 +382,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* User info & signout trigger */}
+        {/* User info & signout trigger - this is kept separate for the desktop view */}
         <motion.div
           className="flex items-center gap-4 cursor-pointer relative"
           onClick={() => setIsSidebarOpen(true)}
@@ -419,16 +418,18 @@ export default function Navbar() {
         {/* Mobile Bottom Navigation */}
         <nav className="fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl bg-gray-800/60 shadow-inner shadow-gray-900 border-t border-white/10 p-2">
           <div className="flex justify-around items-center h-16 relative">
-            {/* The main navigation links */}
-            {navLinks.map((link) => (
-              <MobileNavButton
-                key={link.path}
-                {...link}
-                pathname={pathname}
-                onClick={() => router.push(link.path)}
-              />
-            ))}
-            {/* The single, corrected button to open the profile sidebar or navigate to the profile page */}
+            {/* The navigation links for mobile, excluding the Profile link to avoid duplication */}
+            {navLinks
+              .filter(link => link.path !== "/profile")
+              .map((link) => (
+                <MobileNavButton
+                  key={link.path}
+                  {...link}
+                  pathname={pathname}
+                  onClick={() => router.push(link.path)}
+                />
+              ))}
+            {/* The single, dedicated Profile button for mobile */}
             <MobileNavButton
               key="/profile"
               path="/profile"
@@ -436,7 +437,7 @@ export default function Navbar() {
               icon={User}
               pathname={pathname}
               onClick={() => {
-                // If the user is already on the profile page, open the sidebar.
+                // If the user is on the profile page, open the sidebar.
                 // Otherwise, navigate to the profile page.
                 if (pathname === '/profile') {
                   setIsSidebarOpen(true);
