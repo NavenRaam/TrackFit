@@ -1,3 +1,5 @@
+// Navbar.js - This component should only contain the navigation bar itself.
+
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
